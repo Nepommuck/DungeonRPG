@@ -4,10 +4,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Vector;
+import java.util.*;
 
 
 public class GameWindow extends Canvas {
@@ -43,43 +40,18 @@ public class GameWindow extends Canvas {
         this.context.strokeLine(40, 10, 10, 40);
     }
 
-    public void drawBox(int depth) {
-        drawBox(depth, 0);
-    }
-    public void drawBox(int depth, int dx) {
-        this.context.setStroke(this.drawingColor);
-        this.context.setLineWidth(2);
 
-        int[] diagShares = {6, 11, 14, 16};
-        int sharesSum = 18;
-
-        double diagPerc = (double) diagShares[depth] / sharesSum;
-
-        double length = this.windowSize - diagPerc * windowSize;
-
-        double x = diagPerc * windowSize/2 + (dx * length);
-        double y = diagPerc * windowSize/2 - this.marginTop;
-
-        this.context.fillPolygon(
-                new double[]{x, x, x + length, x + length},
-                new double[]{y, y + length, y + length, y},
-                4
-        );
-
-        // upper
-        this.context.strokeLine(x, y, x + length, y);
-        // lower
-        this.context.strokeLine(x, y + length, x + length, y + length);
-        // left
-        this.context.strokeLine(x, y, x, y + length);
-        // right
-        this.context.strokeLine(x + length, y, x + length, y + length);
-    }
-
-    public void drawWalls(Wall[] walls) {
-        Arrays.sort(walls, (w1, w2) -> {
-            Vector2d observer = new Vector2d(0, -1);
-            return (int) -Math.signum(w1.edgeDistanceTo(observer) - w2.edgeDistanceTo(observer));
+    public void drawWalls(ArrayList<Wall> walls) {
+        walls.sort((w1, w2) -> {
+            double maxDepth1 = Math.max(calcDepth(w1.a), calcDepth(w1.b));
+            double maxDepth2 = Math.max(calcDepth(w2.a), calcDepth(w2.b));
+            if (maxDepth1 != maxDepth2)
+                return (int) -Math.signum(maxDepth1 - maxDepth2);
+            double minDepth1 = Math.min(calcDepth(w1.a), calcDepth(w1.b));
+            double minDepth2 = Math.min(calcDepth(w2.a), calcDepth(w2.b));
+            if (minDepth1 != minDepth2)
+                return (int) -Math.signum(minDepth1 - minDepth2);
+            return -(Math.abs(w1.a.x) - Math.abs(w2.a.x));
         });
 
         for (Wall wall : walls) {
@@ -116,7 +88,7 @@ public class GameWindow extends Canvas {
         this.context.setLineWidth(2);
         this.context.strokeLine(start.x, start.y, end.x, end.y);
     }
-    private Vector2d mapPositionToScreenPosition(Vector2d mapPosition) {
+    private double calcDepth(Vector2d mapPosition) {
         int sharesSum = 18;
         int diagonalShare = switch (mapPosition.y) {
             case 1 -> 6;
@@ -126,9 +98,11 @@ public class GameWindow extends Canvas {
             default -> sharesSum;
         };
         if (mapPosition.y <= 0)
-            diagonalShare = -1;
-
-        double diagPerc = (double) diagonalShare / sharesSum;
+            diagonalShare = 0;
+        return (double) diagonalShare / sharesSum;
+    }
+    private Vector2d mapPositionToScreenPosition(Vector2d mapPosition) {
+        double diagPerc = calcDepth(mapPosition);
         double length = this.windowSize - diagPerc * windowSize;
 
         return new Vector2d(

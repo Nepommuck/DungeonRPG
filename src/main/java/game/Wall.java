@@ -21,4 +21,35 @@ public class Wall {
                 this.b.distanceTo(point)
         );
     }
+
+    public double smallestDistanceTo(Vector2d point) {
+        return getClosestPoint(point).distanceTo(point);
+    }
+    public int getXdistanceTo(Vector2d point) {
+        return Math.abs(point.x - getClosestPoint(point).x);
+    }
+    private Vector2d getClosestPoint(Vector2d point) {
+        Vector2d closestPoint;
+
+        if (this.a.y == this.b.y)
+            closestPoint = new Vector2d(point.x, this.a.y);
+        else
+            closestPoint = new Vector2d(this.a.x, point.y);
+        int minX = Math.min(this.a.x, this.b.x);
+        int maxX = Math.max(this.a.x, this.b.x);
+        int minY = Math.min(this.a.y, this.b.y);
+        int maxY = Math.max(this.a.y, this.b.y);
+        // This point is indeed part of a wall
+        if (minX <= closestPoint.x && closestPoint.x <= maxX && minY <= closestPoint.y && closestPoint.y <= maxY)
+            return closestPoint;
+
+        if (this.a.distanceTo(point) < this.b.distanceTo(point))
+            return this.a;
+        return this.b;
+    }
+
+    @Override
+    public String toString() {
+        return a.toString() + " -> " + b.toString();
+    }
 }
