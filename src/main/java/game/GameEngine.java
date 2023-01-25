@@ -1,9 +1,9 @@
 package game;
 
 public class GameEngine {
-    private App application;
-    private Map map;
-    private Player player;
+    private final App application;
+    private final Map map;
+    private final Player player;
 
     public GameEngine(App application, Map map) {
         this.application = application;
@@ -26,8 +26,9 @@ public class GameEngine {
     }
 
     private void updateWindow() {
-        application.updateGameWindow(map.getPlayerView(
-                player.getPosition(), player.getDirection()).getWallList()
+        application.updateGameWindow(
+                map.getPlayerView(player.getPosition(), player.getDirection()).getWallList(),
+                player.getPlayerWeapon()
         );
     }
 }

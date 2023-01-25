@@ -1,5 +1,6 @@
 package game;
 
+import game.weapon.Weapon;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
@@ -33,13 +34,6 @@ public class GameWindow extends Canvas {
         this.context.setFill(this.backgroundColor);
         this.context.fillRect(0, 0, width, height);
     }
-
-    public void drawTestLine() {
-        this.context.setStroke(this.drawingColor);
-        this.context.setLineWidth(2);
-        this.context.strokeLine(40, 10, 10, 40);
-    }
-
 
     public void drawWalls(ArrayList<Wall> walls) {
         walls.sort((w1, w2) -> {
@@ -83,11 +77,35 @@ public class GameWindow extends Canvas {
         drawLine(bTop, bBottom);
     }
 
+    public void drawWeapon(Weapon weapon) {
+        int offsetNumber = 475;
+        Vector2d offset = new Vector2d(offsetNumber, offsetNumber - (marginTop+marginBottom));
+
+        ArrayList<Vector2d> points = weapon.getSpritePoints(offset);
+        this.context.setFill(this.backgroundColor);
+        double[] xCoords = new double[points.size()];
+        double[] yCoords = new double[points.size()];
+        for (int i = 0; i < points.size(); i++) {
+            xCoords[i] = points.get(i).x;
+            yCoords[i] = points.get(i).y;
+        }
+        this.context.fillPolygon(xCoords, yCoords, points.size());
+
+        ArrayList<Line> lines = weapon.getSpriteLines(offset);
+        for (Line line: lines) {
+            drawLine(line);
+        }
+    }
+
+    private void drawLine(Line line) {
+        drawLine(line.a, line.b);
+    }
     private void drawLine(Vector2d start, Vector2d end) {
         this.context.setStroke(this.drawingColor);
         this.context.setLineWidth(2);
         this.context.strokeLine(start.x, start.y, end.x, end.y);
     }
+
     private double calcDepth(Vector2d mapPosition) {
         int sharesSum = 18;
         int diagonalShare = switch (mapPosition.y) {

@@ -1,5 +1,6 @@
 package game;
 
+import game.weapon.Weapon;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -49,45 +50,17 @@ public class App extends Application {
         );
         Scene scene = new Scene(
                 box,
-                850, 750
+                1000, 800
         );
-
-//        gameEngine.
-
-//        Map playerView = map.getPlayerView(
-//            new Vector2d(5, 2), MapDirection.WEST
-//        );
-//
-//
-//        System.out.println(map);
-//        System.out.println("-----------");
-//        System.out.println(playerView);
-//
-////        System.out.println(trialWallsGood);
-//
-//        ArrayList<Wall> trialWalls2 = new ArrayList<>(Arrays.asList(
-//            new Wall(-1, 0, -1, 1)
-//        ));
-//
-//        System.out.println(playerView.getWallList());
-//        System.out.println(trialWalls2);
-//
-////        gameWindow.drawWalls(trialWallsGood);
-//        gameWindow.drawWalls(playerView.getWallList());
-////        gameWindow.drawWalls(trialWalls2);
-//        gameWindow.clear();
-//
-//        System.out.println(
-//                MoveDirection.LEFT.directionWithRotation(MapDirection.SOUTH)
-//        );
 
         primaryStage.setTitle("Dungeon RPG Indev 0.0.1");
         primaryStage.setScene(scene);
         primaryStage.show();
     }
 
-    void updateGameWindow(ArrayList<Wall> walls) {
+    void updateGameWindow(ArrayList<Wall> walls, Weapon weapon) {
         gameWindow.clear();
         gameWindow.drawWalls(walls);
+        gameWindow.drawWeapon(weapon);
     }
 }
