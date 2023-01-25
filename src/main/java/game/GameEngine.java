@@ -14,8 +14,14 @@ public class GameEngine {
     }
 
     public void movePlayer(MoveDirection direction) {
-        player.move(direction);
-        updateWindow();
+        Vector2d goalPosition = player.getPosition().add(direction.
+                directionWithRotation(player.getDirection()).toUnitVector());
+        if (map.getElementAtPosition(goalPosition) == MapElement.EMPTY) {
+            player.move(direction);
+            updateWindow();
+        }
+        else
+            System.out.println("PUNCH");
     }
     public void rotatePlayer(boolean right) {
         if (right)
