@@ -1,9 +1,12 @@
 package game;
 
+import game.enemies.Enemy;
+
 public enum MapElement {
     EMPTY,
     WALL,
-    PLAYER;
+    PLAYER,
+    ENEMY;
 
     @Override
     public String toString() {
@@ -11,6 +14,7 @@ public enum MapElement {
             case EMPTY -> " ";
             case WALL -> "#";
             case PLAYER -> "P";
+            case ENEMY -> "E";
         };
     }
 }

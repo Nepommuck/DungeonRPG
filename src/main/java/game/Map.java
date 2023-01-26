@@ -1,16 +1,21 @@
 package game;
 
+import game.enemies.Enemy;
+
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Vector;
 
 public class Map {
     public final int width, height;
     private final ArrayList<ArrayList<MapElement>> mapArray;
     private Vector2d playerPosition;
+    private final HashMap<Vector2d, Enemy> enemiesHashMap = new HashMap<>();
 
     public Map(String mapSrc) throws IOException {
         mapArray = new ArrayList<>();
@@ -27,11 +32,12 @@ public class Map {
     }
 
     private Vector2d readMap(String mapSrc) throws IOException {
-        BufferedReader reader = new BufferedReader(new FileReader(mapSrc));
-        String line = reader.readLine();
-
+        final ArrayList<Enemy> enemies = new ArrayList<>();
         int width = -1;
         int height = 0;
+        BufferedReader reader = new BufferedReader(new FileReader(mapSrc));
+
+        String line = reader.readLine();
         while (line != null) {
             mapArray.add(new ArrayList<>());
             height += 1;
@@ -44,17 +50,35 @@ public class Map {
 
             for (char c : line.toCharArray()) {
                 MapElement element = MapElementParser.parse(c);
+                Vector2d position = new Vector2d(mapArray.get(height-1).size() - 1, height - 1);
+
                 if (element == MapElement.PLAYER) {
-                    playerPosition = new Vector2d(
-                            mapArray.get(height-1).size() - 1, height - 1);
+                    if (playerPosition != null)
+                        throw new IllegalArgumentException("There cannot be 2 or more players on the map");
+
+                    playerPosition = position;
                     element = MapElement.EMPTY;
+                }
+                else if (element == MapElement.ENEMY) {
+                    Enemy newEnemy = MapElementParser.createEnemy(c, position);
+                    enemies.add(newEnemy);
                 }
                 mapArray.get(height-1).add(element);
             }
 
             line = reader.readLine();
         }
-        playerPosition = new Vector2d(playerPosition.x, height - 1 - playerPosition.y);
+        if (playerPosition == null)
+            throw new IllegalArgumentException("There needs to be a player on a map");
+
+        for (Enemy enemy : enemies) {
+            Vector2d enemyPosition = enemy.getPosition();
+            for (int dy = -1; dy <= 1; dy ++)
+                for (int dx = -1; dx <= 1; dx++)
+                    placeElementAtPosition(MapElement.ENEMY, enemyPosition.add(new Vector2d(dx, dy)));
+            enemiesHashMap.put(enemyPosition, enemy);
+        }
+
         return new Vector2d(width, height);
     }
 
@@ -70,6 +94,20 @@ public class Map {
         if (!new Vector2d(0, 0).precedes(position) || !getMaxPosition().follows(position))
             return MapElement.WALL;
         return mapArray.get(position.y).get(position.x);
+    }
+    private void placeElementAtPosition(MapElement element, Vector2d position) {
+        if (getElementAtPosition(position) == MapElement.EMPTY)
+            mapArray.get(position.y).set(position.x, element);
+    }
+
+    public Enemy getEnemyFromPosition(Vector2d position) {
+        for (int dy = -1; dy <= 1; dy ++)
+            for (int dx = -1; dx <= 1; dx++) {
+                Vector2d currentPosition = position.add(new Vector2d(dx, dy));
+                if (enemiesHashMap.containsKey(currentPosition))
+                    return enemiesHashMap.get(currentPosition);
+            }
+        return null;
     }
 
     public Map getPlayerView(Vector2d playerPosition, MapDirection direction) {
@@ -166,8 +204,6 @@ public class Map {
         result.append("-".repeat(2 * width));
         result.append('\n');
 
-//        int y = height-1;
-//        for (ArrayList<MapElement> row : this.mapArray) {
         for(int y = height-1; y >= 0; y--) {
             result.append(y).append("| ");
 

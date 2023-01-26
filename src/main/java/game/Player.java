@@ -1,7 +1,7 @@
 package game;
 
-import game.weapon.Sword;
-import game.weapon.Weapon;
+import game.weapons.Sword;
+import game.weapons.Weapon;
 
 public class Player {
     private Vector2d position;

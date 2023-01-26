@@ -1,4 +1,4 @@
-package game.weapon;
+package game.weapons;
 
 import game.Line;
 import game.Vector2d;

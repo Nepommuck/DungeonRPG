@@ -1,11 +1,10 @@
-package game.weapon;
+package game.weapons;
 
 import game.Line;
 import game.Vector2d;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Vector;
 
 public class Sword extends Weapon {
     // Blade sprite points

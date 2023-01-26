@@ -1,10 +1,14 @@
 package game;
 
-import game.weapon.Weapon;
+import game.enemies.Enemy;
+import game.weapons.Weapon;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.*;
 
 
@@ -15,7 +19,7 @@ public class GameWindow extends Canvas {
     final Color backgroundColor = Color.BLACK;
     final Color drawingColor = Color.WHITESMOKE;
 
-    public GameWindow(int windowSize, int marginTop, int marginBottom) {
+    public GameWindow(int windowSize, int marginTop, int marginBottom) throws FileNotFoundException {
         super(windowSize, windowSize - (marginTop + marginBottom));
 
         this.windowSize = windowSize;
@@ -25,9 +29,7 @@ public class GameWindow extends Canvas {
         this.width = windowSize;
         this.height = windowSize - (marginTop + marginBottom);
 
-        this.context = this.getGraphicsContext2D();
-        this.context.setFill(this.backgroundColor);
-        this.context.fillRect(0, 0, width, height);
+        context = this.getGraphicsContext2D();
     }
 
     public void clear() {
@@ -95,6 +97,13 @@ public class GameWindow extends Canvas {
         for (Line line: lines) {
             drawLine(line);
         }
+    }
+
+    public void drawEnemy(Enemy enemy) throws FileNotFoundException {
+        drawEnemy(enemy, new Vector2d(0, 0));
+    }
+    public void drawEnemy(Enemy enemy, Vector2d offset) throws FileNotFoundException {
+        context.drawImage(enemy.getImage(), offset.x, offset.y);
     }
 
     private void drawLine(Line line) {

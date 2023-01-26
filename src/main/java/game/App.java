@@ -1,17 +1,19 @@
 package game;
 
-import game.weapon.Weapon;
+import game.enemies.Enemy;
+import game.weapons.Weapon;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
+
+import javax.sound.sampled.*;
 
 
 public class App extends Application {
@@ -53,14 +55,44 @@ public class App extends Application {
                 1000, 800
         );
 
-        primaryStage.setTitle("Dungeon RPG Indev 0.0.1");
+        primaryStage.setTitle("Dungeon RPG Indev 0.0.2");
         primaryStage.setScene(scene);
         primaryStage.show();
     }
 
-    void updateGameWindow(ArrayList<Wall> walls, Weapon weapon) {
+    void updateGameWindow(ArrayList<Wall> walls, Weapon weapon, Enemy enemy) {
         gameWindow.clear();
         gameWindow.drawWalls(walls);
         gameWindow.drawWeapon(weapon);
+        if (enemy != null)
+            try {
+                gameWindow.drawEnemy(enemy, new Vector2d(150, 150 - gameWindow.marginTop));
+            } catch (FileNotFoundException e) {
+                System.out.println("Enemy image file not found!\n" + e);
+            }
+    }
+
+    public void onPlayerWalk() {
+        try {
+            playSoundEffect("walk");
+        } catch (UnsupportedAudioFileException | LineUnavailableException | IOException e) {
+            System.out.println("En error occurred with a sound effect " + e);
+        }
+    }
+    public void onPlayerWallHit() {
+        try {
+            playSoundEffect("wall-hit");
+        } catch (UnsupportedAudioFileException | LineUnavailableException | IOException e) {
+            System.out.println("En error occurred with a sound effect " + e);
+        }
+    }
+
+    private void playSoundEffect(String audioFileName) throws UnsupportedAudioFileException, LineUnavailableException,
+            IOException {
+        File audioFile = new File("src\\main\\resources\\soundEffects\\" + audioFileName + ".wav");
+        AudioInputStream audioIn = AudioSystem.getAudioInputStream(audioFile);
+        Clip clip = AudioSystem.getClip();
+        clip.open(audioIn);
+        clip.start();
     }
 }
