@@ -30,6 +30,7 @@ abstract public class Enemy {
         return new Image(new FileInputStream("src\\main\\resources\\images\\" + imageName + ".png"));
     }
 
+
     public Vector2d getPosition() {
         return position;
     }
@@ -39,4 +40,8 @@ abstract public class Enemy {
     }
 
     abstract public String toString();
+
+    public String getDeathSoundFileName() {
+        return "enemy-death";
+    }
 }

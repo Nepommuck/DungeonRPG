@@ -1,6 +1,5 @@
 package game;
 
-import game.enemies.Enemy;
 
 public enum MapElement {
     EMPTY,

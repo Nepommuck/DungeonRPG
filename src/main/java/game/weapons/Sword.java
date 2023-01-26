@@ -63,4 +63,9 @@ public class Sword extends Weapon {
             results.add(point.add(offset));
         return results;
     }
+
+    @Override
+    public String getHitSoundFileName() {
+        return "sword";
+    }
 }

@@ -42,7 +42,7 @@ public class GameEngine {
 
     public void attackEnemy() {
         currentlyEngagedEnemy.decreaseHealth(player.getPlayerWeapon().damage);
-        application.onEnemyDamaged(currentlyEngagedEnemy);
+        application.onEnemyDamaged(currentlyEngagedEnemy, player.getPlayerWeapon());
 
         if (!currentlyEngagedEnemy.isAlive()) {
             map.removeEnemy(currentlyEngagedEnemy);

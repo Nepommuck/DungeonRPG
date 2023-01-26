@@ -44,7 +44,7 @@ public class App extends Application {
         HBox mainBox = new HBox(gameWindow, rightPanel);
         Scene scene = new Scene(mainBox, boxSize + 260, boxSize - (marginTop + marginBottom));
 
-        primaryStage.setTitle("Dungeon RPG Indev 0.0.2");
+        primaryStage.setTitle("Dungeon RPG Indev 0.0.3");
         primaryStage.setScene(scene);
         primaryStage.show();
         primaryStage.setResizable(false);
@@ -105,17 +105,27 @@ public class App extends Application {
         GridPane buttonGrid = new GridPane();
         buttonGrid.add(attackButton, 0, 0);
 
-        onEnemyDamaged(enemy);
+        updateEnemyInfo(enemy);
         rightPanel.getChildren().clear();
         rightPanel.setTop(fightInfoBox);
         rightPanel.setBottom(buttonGrid);
     }
-
-    public void onEnemyDamaged(Enemy enemy) {
-        Label enemyLabel = new Label(enemy.toString() + ": " + enemy.getHealthPoints() + "HP");
-        enemyLabel.setFont(new Font(20));
+    private void updateEnemyInfo(Enemy enemy) {
+        Label enemyLabel = new Label(enemy.toString() + "\n" + enemy.getHealthPoints() + "HP");
+        enemyLabel.setFont(Font.font("Courier New", FontWeight.BOLD, 30));
         fightInfoBox.getChildren().clear();
         fightInfoBox.getChildren().add(enemyLabel);
+    }
+
+    public void onEnemyDamaged(Enemy enemy, Weapon equippedWeapon) {
+        updateEnemyInfo(enemy);
+        String fileName = (enemy.getHealthPoints() > 0) ?
+                equippedWeapon.getHitSoundFileName() : enemy.getDeathSoundFileName();
+        try {
+            playSoundEffect(fileName);
+        } catch (UnsupportedAudioFileException | LineUnavailableException | IOException e) {
+            System.out.println("En error occurred with a sound effect " + e);
+        }
     }
 
     public void updateGameWindow(ArrayList<Wall> walls, Weapon weapon, Enemy enemy) {

@@ -19,4 +19,6 @@ public abstract class Weapon {
     abstract public ArrayList<Line> getSpriteLines(Vector2d offset);
 
     abstract public ArrayList<Vector2d> getSpritePoints(Vector2d offset);
+
+    abstract public String getHitSoundFileName();
 }

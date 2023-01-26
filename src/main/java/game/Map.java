@@ -3,13 +3,10 @@ package game;
 import game.enemies.Enemy;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Vector;
 
 public class Map {
     public final int width, height;
@@ -22,7 +19,6 @@ public class Map {
         Vector2d mapSize =  readMap(mapSrc);
         width = mapSize.x;
         height = mapSize.y;
-        System.out.println(this);
     }
 
     // For development purposes
@@ -113,12 +109,9 @@ public class Map {
 
     public void removeEnemy(Enemy enemy) {
         Vector2d position = enemy.getPosition();
-        System.out.println(position);
 
         enemiesHashMap.remove(position);
-        System.out.println(this);
         mapArray.get(position.y).set(position.x, MapElement.EMPTY);
-        System.out.println(this);
     }
 
     public Map getPlayerView(Vector2d playerPosition, MapDirection direction) {
