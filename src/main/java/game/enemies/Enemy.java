@@ -6,7 +6,7 @@ import javafx.scene.image.Image;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
-public class Enemy {
+abstract public class Enemy {
     private final Vector2d position;
     private int healthPoints;
     private final int damage;
@@ -33,4 +33,10 @@ public class Enemy {
     public Vector2d getPosition() {
         return position;
     }
+
+    public int getHealthPoints() {
+        return healthPoints;
+    }
+
+    abstract public String toString();
 }

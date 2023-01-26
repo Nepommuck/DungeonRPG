@@ -42,6 +42,7 @@ public class GameEngine {
 
     public void attackEnemy() {
         currentlyEngagedEnemy.decreaseHealth(player.getPlayerWeapon().damage);
+        application.onEnemyDamaged(currentlyEngagedEnemy);
 
         if (!currentlyEngagedEnemy.isAlive()) {
             map.removeEnemy(currentlyEngagedEnemy);
@@ -59,7 +60,7 @@ public class GameEngine {
         );
         if (currentlyEngagedEnemy != null) {
             fighting = true;
-            application.setPanelToFightingMode();
+            application.setPanelToFightingMode(currentlyEngagedEnemy);
         }
         else {
             fighting = false;
