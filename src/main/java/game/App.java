@@ -6,6 +6,7 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
+import javafx.scene.shape.Box;
 import javafx.stage.Stage;
 
 import java.io.File;
@@ -19,6 +20,10 @@ import javax.sound.sampled.*;
 public class App extends Application {
     private GameEngine gameEngine;
     private GameWindow gameWindow;
+    private HBox rightPanel = new HBox();
+    private HBox mainBox;
+    private Scene scene;
+    private Stage primaryStage;
 
     @Override
     public void start(Stage primaryStage) throws IOException {
@@ -31,6 +36,17 @@ public class App extends Application {
             new Map("maps\\trial_map.txt")
         );
 
+        setPanelToWalkingMode();
+        mainBox = new HBox(gameWindow, rightPanel);
+        scene = new Scene(mainBox, 1000, 800);
+
+        this.primaryStage = primaryStage;
+        primaryStage.setTitle("Dungeon RPG Indev 0.0.2");
+        primaryStage.setScene(scene);
+        primaryStage.show();
+    }
+
+    void setPanelToWalkingMode() {
         Button forwardButton = new Button("FORWARD");
         forwardButton.setOnAction(e -> {
             gameEngine.movePlayer(MoveDirection.FORWARD);
@@ -44,20 +60,20 @@ public class App extends Application {
             gameEngine.rotatePlayer(false);
         });
 
-        HBox box = new HBox(
-                gameWindow,
-                leftButton,
-                forwardButton,
-                rightButton
-        );
-        Scene scene = new Scene(
-                box,
-                1000, 800
-        );
+        rightPanel.getChildren().clear();
+        rightPanel.getChildren().add(leftButton);
+        rightPanel.getChildren().add(forwardButton);
+        rightPanel.getChildren().add(rightButton);
+    }
 
-        primaryStage.setTitle("Dungeon RPG Indev 0.0.2");
-        primaryStage.setScene(scene);
-        primaryStage.show();
+    void setPanelToFightingMode() {
+        Button attackButton = new Button("ATTACK");
+        attackButton.setOnAction(e -> {
+            gameEngine.attackEnemy();
+        });
+
+        rightPanel.getChildren().clear();
+        rightPanel.getChildren().add(attackButton);
     }
 
     void updateGameWindow(ArrayList<Wall> walls, Weapon weapon, Enemy enemy) {

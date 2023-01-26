@@ -8,9 +8,9 @@ import java.io.FileNotFoundException;
 
 public class Enemy {
     private final Vector2d position;
-    public int healthPoints;
-    public final int damage;
-    public final String imageName;
+    private int healthPoints;
+    private final int damage;
+    private final String imageName;
 
     protected Enemy(int initalHP, int damage, String imageName, Vector2d position) {
         this.healthPoints = initalHP;

@@ -23,8 +23,9 @@ public class Sword extends Weapon {
     Vector2d L = J.add(new Vector2d(-35, 35));
     Vector2d M = K.add(new Vector2d(50, 50));
     Vector2d N = L.add(new Vector2d(50, 50));
+
     public Sword() {
-        super(5);
+        super(4);
     }
 
     @Override

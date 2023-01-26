@@ -7,6 +7,7 @@ public class GameEngine {
     private final Map map;
     private final Player player;
     private boolean fighting = false;
+    private Enemy currentlyEngagedEnemy = null;
 
     public GameEngine(App application, Map map) {
         this.application = application;
@@ -39,15 +40,30 @@ public class GameEngine {
         }
     }
 
+    public void attackEnemy() {
+        currentlyEngagedEnemy.decreaseHealth(player.getPlayerWeapon().damage);
+
+        if (!currentlyEngagedEnemy.isAlive()) {
+            map.removeEnemy(currentlyEngagedEnemy);
+            currentlyEngagedEnemy = null;
+            updateWindow();
+        }
+    }
+
     private void updateWindow() {
-        Enemy enemy = map.getEnemyFromPosition(player.getPosition());
+        currentlyEngagedEnemy = map.getEnemyFromPosition(player.getPosition());
         application.updateGameWindow(
                 map.getPlayerView(player.getPosition(), player.getDirection()).getWallList(),
                 player.getPlayerWeapon(),
-                enemy
+                currentlyEngagedEnemy
         );
-        if (enemy != null) {
+        if (currentlyEngagedEnemy != null) {
             fighting = true;
+            application.setPanelToFightingMode();
+        }
+        else {
+            fighting = false;
+            application.setPanelToWalkingMode();
         }
     }
 }

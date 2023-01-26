@@ -22,6 +22,7 @@ public class Map {
         Vector2d mapSize =  readMap(mapSrc);
         width = mapSize.x;
         height = mapSize.y;
+        System.out.println(this);
     }
 
     // For development purposes
@@ -50,7 +51,7 @@ public class Map {
 
             for (char c : line.toCharArray()) {
                 MapElement element = MapElementParser.parse(c);
-                Vector2d position = new Vector2d(mapArray.get(height-1).size() - 1, height - 1);
+                Vector2d position = new Vector2d(mapArray.get(height-1).size(), height - 1);
 
                 if (element == MapElement.PLAYER) {
                     if (playerPosition != null)
@@ -108,6 +109,16 @@ public class Map {
                     return enemiesHashMap.get(currentPosition);
             }
         return null;
+    }
+
+    public void removeEnemy(Enemy enemy) {
+        Vector2d position = enemy.getPosition();
+        System.out.println(position);
+
+        enemiesHashMap.remove(position);
+        System.out.println(this);
+        mapArray.get(position.y).set(position.x, MapElement.EMPTY);
+        System.out.println(this);
     }
 
     public Map getPlayerView(Vector2d playerPosition, MapDirection direction) {
@@ -199,7 +210,7 @@ public class Map {
     public String toString() {
         StringBuilder result = new StringBuilder("Map: \n\\x");
         for (int i = 0; i < width; i++)
-            result.append(' ').append(i);
+            result.append((i < 10) ? " " : "").append(i);
         result.append("\ny+");
         result.append("-".repeat(2 * width));
         result.append('\n');
