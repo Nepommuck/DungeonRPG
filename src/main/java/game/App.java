@@ -33,6 +33,7 @@ public class App extends Application {
     public void start(Stage primaryStage) throws IOException {
         final int boxSize = 800;
         final int marginTop = 50, marginBottom = 50;
+        final int rightPanelWidth = 300;
 
         gameWindow = new GameWindow(boxSize, marginTop, marginBottom);
         gameEngine = new GameEngine(this,
@@ -41,12 +42,13 @@ public class App extends Application {
 
         rightPanel.setPadding(new Insets(20, 20, 20, 20));
         rightPanel.setBackground(new Background(new BackgroundFill(Color.GRAY, CornerRadii.EMPTY, Insets.EMPTY)));
-        rightPanel.setMinWidth(350);
+        rightPanel.setMinWidth(rightPanelWidth);
+        playerInfoBox.setPadding(new Insets(10, 0, 0, 0));
 
         updatePlayerInfo(gameEngine.getPlayer());
         setPanelToWalkingMode();
         HBox mainBox = new HBox(gameWindow, rightPanel);
-        Scene scene = new Scene(mainBox, boxSize + 260, boxSize - (marginTop + marginBottom));
+        Scene scene = new Scene(mainBox, boxSize + rightPanelWidth, boxSize - (marginTop + marginBottom));
 
         primaryStage.setTitle("Dungeon RPG Indev 0.0.3");
         primaryStage.setScene(scene);
@@ -106,12 +108,21 @@ public class App extends Application {
         } catch (UnsupportedAudioFileException | LineUnavailableException | IOException e) {
             System.out.println("En error occurred with a sound effect " + e);
         }
+
         Button attackButton = createButton("ATTACK", e -> {
             gameEngine.attackEnemy();
+        });
+        Button healButton = createButton("HEAL", e -> {
+            if (gameEngine.healPlayer()) {
+                updatePlayerInfo(gameEngine.getPlayer());
+            }
+            else
+                updateFightLog("No healing potions left");
         });
 
         GridPane buttonGrid = new GridPane();
         buttonGrid.add(attackButton, 0, 0);
+        buttonGrid.add(healButton, 0, 1);
 
         updateEnemyInfo(enemy);
         rightPanel.getChildren().clear();
@@ -130,8 +141,9 @@ public class App extends Application {
     }
     private void updatePlayerInfo(Player player) {
         Label playerLabel = new Label("Player:\n" +
-                player.getHealthPoints() + "HP / " + player.getMaxHealthPoints() + "HP");
-        playerLabel.setFont(Font.font("Courier New", FontWeight.BOLD, 30));
+                player.getHealthPoints() + "HP / " + player.getMaxHealthPoints() + "HP\n" +
+                player.getHealingPotionsNumber() + " health potions");
+        playerLabel.setFont(Font.font("Courier New", FontWeight.BOLD, 26));
         playerInfoBox.getChildren().clear();
         playerInfoBox.getChildren().add(playerLabel);
     }
@@ -145,6 +157,9 @@ public class App extends Application {
     public void onEnemyDamaged(Enemy enemy, Weapon equippedWeapon, int damageCaused) {
         updateEnemyInfo(enemy);
         updateFightLog(enemy + " damaged by " + damageCaused + "HP");
+
+        if (enemy.getHealthPoints() <= 0)
+            updatePlayerInfo(gameEngine.getPlayer());
 
         String fileName = (enemy.getHealthPoints() > 0) ?
                 equippedWeapon.getHitSoundFileName() : enemy.getDeathSoundFileName();

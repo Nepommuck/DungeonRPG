@@ -43,21 +43,30 @@ public class GameEngine {
     public void attackEnemy() {
         int damageCaused = player.getPlayerWeapon().damage;
         currentlyEngagedEnemy.decreaseHealth(damageCaused);
-        application.onEnemyDamaged(currentlyEngagedEnemy, player.getPlayerWeapon(), damageCaused);
+        Enemy theEnemy = currentlyEngagedEnemy;
 
-        if (!currentlyEngagedEnemy.isAlive()) {
-            map.removeEnemy(currentlyEngagedEnemy);
-            currentlyEngagedEnemy = null;
-            updateWindow();
-        }
-        else {
-//            try {
-//                Thread.sleep(2000);
-//            } catch (InterruptedException e) {
-//                System.out.println("Nonfatal error: Game engine interrupted\n" + e);
-//            }
+        if (!currentlyEngagedEnemy.isAlive())
+            onEnemyDeath();
+        else
             enemyAttacks();
+
+        application.onEnemyDamaged(theEnemy, player.getPlayerWeapon(), damageCaused);
+    }
+
+    private void onEnemyDeath() {
+        map.removeEnemy(currentlyEngagedEnemy);
+        currentlyEngagedEnemy = null;
+
+        player.addPotionsToInventory(1);
+        updateWindow();
+    }
+
+    public boolean healPlayer() {
+        if (player.getHealingPotionsNumber() > 0) {
+            player.heal();
+            return true;
         }
+        return false;
     }
 
     private void enemyAttacks() {

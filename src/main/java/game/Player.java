@@ -8,6 +8,7 @@ public class Player {
     private MapDirection direction;
     private int healthPoints;
     private final int maxHealthPoints;
+    private int healingPotionsNumber = 0;
 
     private final Weapon weapon = new Sword();
 
@@ -37,6 +38,17 @@ public class Player {
         this.healthPoints -= damage;
     }
 
+    public void addPotionsToInventory(int quantity) {
+        healingPotionsNumber += quantity;
+    }
+
+    public void heal() {
+        if (healingPotionsNumber > 0) {
+            healingPotionsNumber--;
+            healthPoints = Math.min(healthPoints + 10, maxHealthPoints);
+        }
+    }
+
     public MapDirection getDirection() {
         return direction;
     }
@@ -51,5 +63,8 @@ public class Player {
     }
     public int getMaxHealthPoints() {
         return maxHealthPoints;
+    }
+    public int getHealingPotionsNumber() {
+        return healingPotionsNumber;
     }
 }

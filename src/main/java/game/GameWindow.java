@@ -17,7 +17,7 @@ public class GameWindow extends Canvas {
     final Color backgroundColor = Color.BLACK;
     final Color drawingColor = Color.WHITESMOKE;
 
-    public GameWindow(int windowSize, int marginTop, int marginBottom) throws FileNotFoundException {
+    public GameWindow(int windowSize, int marginTop, int marginBottom) {
         super(windowSize, windowSize - (marginTop + marginBottom));
 
         this.windowSize = windowSize;
