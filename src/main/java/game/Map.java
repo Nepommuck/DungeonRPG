@@ -11,7 +11,8 @@ import java.util.HashMap;
 public class Map {
     public final int width, height;
     private final ArrayList<ArrayList<MapElement>> mapArray;
-    private Vector2d playerPosition;
+    private Vector2d playerPosition = null;
+    private MapDirection playerDirection = null;
     private final HashMap<Vector2d, Enemy> enemiesHashMap = new HashMap<>();
 
     public Map(String mapSrc) throws IOException {
@@ -34,8 +35,13 @@ public class Map {
         int height = 0;
         BufferedReader reader = new BufferedReader(new FileReader(mapSrc));
 
-        String line = reader.readLine();
-        while (line != null) {
+        ArrayList<String> mapLines = new ArrayList<>();
+        String fileLine = reader.readLine();
+        while (fileLine != null) {
+            mapLines.add(0, fileLine);
+            fileLine = reader.readLine();
+        }
+        for (String line : mapLines) {
             mapArray.add(new ArrayList<>());
             height += 1;
 
@@ -54,6 +60,7 @@ public class Map {
                         throw new IllegalArgumentException("There cannot be 2 or more players on the map");
 
                     playerPosition = position;
+                    playerDirection = MapElementParser.parseDirection(c);
                     element = MapElement.EMPTY;
                 }
                 else if (element == MapElement.ENEMY) {
@@ -63,7 +70,6 @@ public class Map {
                 mapArray.get(height-1).add(element);
             }
 
-            line = reader.readLine();
         }
         if (playerPosition == null)
             throw new IllegalArgumentException("There needs to be a player on a map");
@@ -82,7 +88,9 @@ public class Map {
     public Vector2d getInitialPlayerPosition() {
         return playerPosition;
     }
-
+    public MapDirection getInitialPlayerDirection() {
+        return playerDirection;
+    }
     public Vector2d getMaxPosition() {
         return new Vector2d(width - 1, height - 1);
     }

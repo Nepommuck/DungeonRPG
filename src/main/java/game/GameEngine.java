@@ -12,7 +12,7 @@ public class GameEngine {
     public GameEngine(App application, Map map) {
         this.application = application;
         this.map = map;
-        this.player = new Player(map.getInitialPlayerPosition(), MapDirection.NORTH);
+        this.player = new Player(map.getInitialPlayerPosition(), map.getInitialPlayerDirection());
 
         updateWindow();
     }

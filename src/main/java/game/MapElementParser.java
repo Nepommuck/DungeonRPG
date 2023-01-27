@@ -10,12 +10,12 @@ public class MapElementParser {
         MapElement result = switch (character) {
             case '.' -> EMPTY;
             case '#' -> WALL;
-            case 'P' -> PLAYER;
+            case 'P', '^', '<', '>', 'V' -> PLAYER;
             case 'B' -> ENEMY;
             default -> null;
         };
         if (result == null)
-            throw new IllegalArgumentException("Illegal character \'" + character + "\' in map file");
+            throw new IllegalArgumentException("Illegal character '" + character + "' in map file");
         return result;
     }
 
@@ -26,7 +26,21 @@ public class MapElementParser {
         };
         if (enemy == null)
             throw new IllegalArgumentException(
-                    "Character \'" + character + "\' does not correspond to any known enemy");
+                    "Character '" + character + "' does not correspond to any known enemy");
         return enemy;
+    }
+
+    public static MapDirection parseDirection(char character) {
+        MapDirection direction = switch (character) {
+            case 'P', '^' -> MapDirection.NORTH;
+            case 'V' -> MapDirection.SOUTH;
+            case '<' -> MapDirection.WEST;
+            case '>' -> MapDirection.EAST;
+            default -> null;
+        };
+        if (direction == null)
+            throw new IllegalArgumentException(
+                    "Character '" + character + "' does not correspond to any player direction");
+        return direction;
     }
 }
