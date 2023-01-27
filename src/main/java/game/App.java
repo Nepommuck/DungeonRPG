@@ -26,8 +26,17 @@ public class App extends Application {
     private GameWindow gameWindow;
     private final BorderPane rightPanel = new BorderPane();
     private final HBox fightInfoBox = new HBox();
-    private final VBox fightLog = new VBox();
+    private final VBox logBox = new VBox();
     private final HBox playerInfoBox = new HBox();
+    private Button healButton = createButton("HEAL", e -> {
+        if (gameEngine.healPlayer()) {
+            updatePlayerInfo(gameEngine.getPlayer());
+        }
+        else if (gameEngine.getPlayer().getHealthPoints() >= gameEngine.getPlayer().getMaxHealthPoints())
+            updateFightLog("There is no need to heal");
+        else
+            updateFightLog("No healing potions left");
+    });
 
     @Override
     public void start(Stage primaryStage) throws IOException {
@@ -87,6 +96,7 @@ public class App extends Application {
         buttonGrid.setHgap(5);
         buttonGrid.setVgap(5);
         buttonGrid.setMaxHeight(200);
+        buttonGrid.setPadding(new Insets(20, 0, 0, 0));
 
         buttonGrid.add(rotateLeftButton, 0, 0);
         buttonGrid.add(forwardButton, 1, 0);
@@ -96,8 +106,9 @@ public class App extends Application {
         buttonGrid.add(goRightButton, 2, 1);
 
         rightPanel.getChildren().clear();
+        rightPanel.setTop(logBox);
         rightPanel.setBottom(
-                new VBox(buttonGrid, playerInfoBox)
+                new VBox(healButton, buttonGrid, playerInfoBox)
         );
     }
 
@@ -112,13 +123,6 @@ public class App extends Application {
         Button attackButton = createButton("ATTACK", e -> {
             gameEngine.attackEnemy();
         });
-        Button healButton = createButton("HEAL", e -> {
-            if (gameEngine.healPlayer()) {
-                updatePlayerInfo(gameEngine.getPlayer());
-            }
-            else
-                updateFightLog("No healing potions left");
-        });
 
         GridPane buttonGrid = new GridPane();
         buttonGrid.add(attackButton, 0, 0);
@@ -127,7 +131,7 @@ public class App extends Application {
         updateEnemyInfo(enemy);
         rightPanel.getChildren().clear();
         rightPanel.setTop(
-                new VBox(fightInfoBox, fightLog)
+                new VBox(fightInfoBox, logBox)
         );
         rightPanel.setBottom(
                 new VBox(buttonGrid, playerInfoBox)
@@ -148,10 +152,10 @@ public class App extends Application {
         playerInfoBox.getChildren().add(playerLabel);
     }
     private void updateFightLog(String message) {
-        fightLog.getChildren().add(0, new Label(message));
+        logBox.getChildren().add(0, new Label(message));
     }
     private void clearFightLog() {
-        fightLog.getChildren().clear();
+        logBox.getChildren().clear();
     }
 
     public void onEnemyDamaged(Enemy enemy, Weapon equippedWeapon, int damageCaused) {

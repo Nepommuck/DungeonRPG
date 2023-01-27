@@ -62,7 +62,7 @@ public class GameEngine {
     }
 
     public boolean healPlayer() {
-        if (player.getHealingPotionsNumber() > 0) {
+        if (player.getHealingPotionsNumber() > 0 && player.getHealthPoints() < player.getMaxHealthPoints()) {
             player.heal();
             return true;
         }
