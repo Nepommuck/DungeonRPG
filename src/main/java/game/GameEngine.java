@@ -41,14 +41,29 @@ public class GameEngine {
     }
 
     public void attackEnemy() {
-        currentlyEngagedEnemy.decreaseHealth(player.getPlayerWeapon().damage);
-        application.onEnemyDamaged(currentlyEngagedEnemy, player.getPlayerWeapon());
+        int damageCaused = player.getPlayerWeapon().damage;
+        currentlyEngagedEnemy.decreaseHealth(damageCaused);
+        application.onEnemyDamaged(currentlyEngagedEnemy, player.getPlayerWeapon(), damageCaused);
 
         if (!currentlyEngagedEnemy.isAlive()) {
             map.removeEnemy(currentlyEngagedEnemy);
             currentlyEngagedEnemy = null;
             updateWindow();
         }
+        else {
+//            try {
+//                Thread.sleep(2000);
+//            } catch (InterruptedException e) {
+//                System.out.println("Nonfatal error: Game engine interrupted\n" + e);
+//            }
+            enemyAttacks();
+        }
+    }
+
+    private void enemyAttacks() {
+        int damageCaused = currentlyEngagedEnemy.getDamage();
+        player.damage(damageCaused);
+        application.onPlayerDamaged(player, damageCaused);
     }
 
     private void updateWindow() {
@@ -66,5 +81,9 @@ public class GameEngine {
             fighting = false;
             application.setPanelToWalkingMode();
         }
+    }
+
+    public Player getPlayer() {
+        return player;
     }
 }

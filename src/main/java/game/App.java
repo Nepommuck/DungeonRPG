@@ -26,6 +26,8 @@ public class App extends Application {
     private GameWindow gameWindow;
     private final BorderPane rightPanel = new BorderPane();
     private final HBox fightInfoBox = new HBox();
+    private final VBox fightLog = new VBox();
+    private final HBox playerInfoBox = new HBox();
 
     @Override
     public void start(Stage primaryStage) throws IOException {
@@ -39,7 +41,9 @@ public class App extends Application {
 
         rightPanel.setPadding(new Insets(20, 20, 20, 20));
         rightPanel.setBackground(new Background(new BackgroundFill(Color.GRAY, CornerRadii.EMPTY, Insets.EMPTY)));
-        rightPanel.setMinWidth(400);
+        rightPanel.setMinWidth(350);
+
+        updatePlayerInfo(gameEngine.getPlayer());
         setPanelToWalkingMode();
         HBox mainBox = new HBox(gameWindow, rightPanel);
         Scene scene = new Scene(mainBox, boxSize + 260, boxSize - (marginTop + marginBottom));
@@ -80,6 +84,7 @@ public class App extends Application {
         GridPane buttonGrid = new GridPane();
         buttonGrid.setHgap(5);
         buttonGrid.setVgap(5);
+        buttonGrid.setMaxHeight(200);
 
         buttonGrid.add(rotateLeftButton, 0, 0);
         buttonGrid.add(forwardButton, 1, 0);
@@ -89,10 +94,13 @@ public class App extends Application {
         buttonGrid.add(goRightButton, 2, 1);
 
         rightPanel.getChildren().clear();
-        rightPanel.setBottom(buttonGrid);
+        rightPanel.setBottom(
+                new VBox(buttonGrid, playerInfoBox)
+        );
     }
 
     public void setPanelToFightingMode(Enemy enemy) {
+        clearFightLog();
         try {
             playSoundEffect("fight-begins");
         } catch (UnsupportedAudioFileException | LineUnavailableException | IOException e) {
@@ -107,8 +115,12 @@ public class App extends Application {
 
         updateEnemyInfo(enemy);
         rightPanel.getChildren().clear();
-        rightPanel.setTop(fightInfoBox);
-        rightPanel.setBottom(buttonGrid);
+        rightPanel.setTop(
+                new VBox(fightInfoBox, fightLog)
+        );
+        rightPanel.setBottom(
+                new VBox(buttonGrid, playerInfoBox)
+        );
     }
     private void updateEnemyInfo(Enemy enemy) {
         Label enemyLabel = new Label(enemy.toString() + "\n" + enemy.getHealthPoints() + "HP");
@@ -116,9 +128,24 @@ public class App extends Application {
         fightInfoBox.getChildren().clear();
         fightInfoBox.getChildren().add(enemyLabel);
     }
+    private void updatePlayerInfo(Player player) {
+        Label playerLabel = new Label("Player:\n" +
+                player.getHealthPoints() + "HP / " + player.getMaxHealthPoints() + "HP");
+        playerLabel.setFont(Font.font("Courier New", FontWeight.BOLD, 30));
+        playerInfoBox.getChildren().clear();
+        playerInfoBox.getChildren().add(playerLabel);
+    }
+    private void updateFightLog(String message) {
+        fightLog.getChildren().add(0, new Label(message));
+    }
+    private void clearFightLog() {
+        fightLog.getChildren().clear();
+    }
 
-    public void onEnemyDamaged(Enemy enemy, Weapon equippedWeapon) {
+    public void onEnemyDamaged(Enemy enemy, Weapon equippedWeapon, int damageCaused) {
         updateEnemyInfo(enemy);
+        updateFightLog(enemy + " damaged by " + damageCaused + "HP");
+
         String fileName = (enemy.getHealthPoints() > 0) ?
                 equippedWeapon.getHitSoundFileName() : enemy.getDeathSoundFileName();
         try {
@@ -126,6 +153,11 @@ public class App extends Application {
         } catch (UnsupportedAudioFileException | LineUnavailableException | IOException e) {
             System.out.println("En error occurred with a sound effect " + e);
         }
+    }
+
+    public void onPlayerDamaged(Player player, int damageCaused) {
+        updatePlayerInfo(player);
+        updateFightLog("Player damaged by " + damageCaused + "HP");
     }
 
     public void updateGameWindow(ArrayList<Wall> walls, Weapon weapon, Enemy enemy) {

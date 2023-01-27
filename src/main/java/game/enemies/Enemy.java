@@ -29,19 +29,18 @@ abstract public class Enemy {
     public Image getImage() throws FileNotFoundException {
         return new Image(new FileInputStream("src\\main\\resources\\images\\" + imageName + ".png"));
     }
-
-
     public Vector2d getPosition() {
         return position;
     }
-
     public int getHealthPoints() {
         return healthPoints;
     }
-
-    abstract public String toString();
-
+    public int getDamage() {
+        return damage;
+    }
     public String getDeathSoundFileName() {
         return "enemy-death";
     }
+    abstract public String toString();
+
 }
